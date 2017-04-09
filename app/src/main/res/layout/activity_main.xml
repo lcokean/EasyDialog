@@ -1,33 +1,29 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/rlBackground"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-    >
+    android:id="@+id/rlBackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="20dp"
-        >
+        android:layout_marginTop="20dp">
 
         <Button
             android:id="@+id/btnTopLeft"
-            android:text="Click Me"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:background="#CCCCCC"
-            />
+            android:text="Click Me" />
 
         <Button
             android:id="@+id/btnTopRight"
-            android:text="Click Me"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:background="#CCCCCC"
-            />
+            android:text="Click Me" />
 
     </RelativeLayout>
 
@@ -40,46 +36,41 @@
 
         <Button
             android:id="@+id/btnMiddleTop"
-            android:text="Click Me"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:background="#CCCCCC"
-            />
+            android:text="Click Me" />
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
 
             <Button
                 android:id="@+id/btnMiddleLeft"
-                android:text="Click Me"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:background="#CCCCCC"
-                />
+                android:text="Click Me" />
 
             <Button
                 android:id="@+id/btnMiddleRight"
-                android:text="Click Me"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:background="#CCCCCC"
-                />
+                android:text="Click Me" />
 
         </RelativeLayout>
 
         <Button
             android:id="@+id/btnMiddleBottom"
-            android:text="Click Me"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:background="#CCCCCC"
-            />
+            android:text="Click Me" />
 
     </LinearLayout>
 
@@ -92,22 +83,20 @@
 
         <Button
             android:id="@+id/btnBottomLeft"
-            android:text="Click Me"
-            android:layout_weight="1"
             android:layout_width="wrap_content"
-            android:layout_margin="10dip"
             android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:layout_weight="1"
             android:background="#CCCCCC"
-            />
+            android:text="Click Me" />
 
         <Button
             android:id="@+id/btnBottomRight"
-            android:text="Click Me"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dip"
             android:background="#CCCCCC"
-            />
+            android:text="Click Me" />
 
     </LinearLayout>
 

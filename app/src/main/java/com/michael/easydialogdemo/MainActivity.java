@@ -1,7 +1,8 @@
 package com.michael.easydialogdemo;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -16,8 +17,7 @@ import com.michael.easydialog.EasyDialog;
  * <p/>
  * Created by michael on 15/4/15.
  */
-public class MainActivity extends ActionBarActivity implements View.OnClickListener
-{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private RelativeLayout rlBackground;
     private Button btnTopLeft;
     private Button btnTopRight;
@@ -29,15 +29,15 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Button btnBottomRight;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         iniComponent();
+
+        AlertDialog.Builder
     }
 
-    private void iniComponent()
-    {
+    private void iniComponent() {
         rlBackground = (RelativeLayout) findViewById(R.id.rlBackground);
         btnTopLeft = (Button) findViewById(R.id.btnTopLeft);
         btnTopRight = (Button) findViewById(R.id.btnTopRight);
@@ -56,15 +56,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         btnMiddleBottom.setOnClickListener(this);
         btnBottomLeft.setOnClickListener(this);
         btnBottomRight.setOnClickListener(this);
-        rlBackground.setOnTouchListener(new View.OnTouchListener()
-        {
+        rlBackground.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
+            public boolean onTouch(View v, MotionEvent event) {
                 int[] location = new int[2];
                 location[0] = (int) event.getX();
                 location[1] = (int) event.getY();
-                location[1] = location[1] + getActionBarHeight() + getStatusBarHeight();
+                location[1] = location[1] + getStatusBarHeight();
                 Toast.makeText(MainActivity.this, "x:" + location[0] + " y:" + location[1], Toast.LENGTH_SHORT).show();
 
 //                View easyView = MainActivity.this.getLayoutInflater().inflate(R.layout.layout_tip_list_view, null);
@@ -96,10 +94,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v)
-    {
-        switch (v.getId())
-        {
+    public void onClick(View v) {
+        switch (v.getId()) {
             case R.id.btnTopLeft:
                 View view = this.getLayoutInflater().inflate(R.layout.layout_tip_content_horizontal, null);
                 new EasyDialog(MainActivity.this)
@@ -132,19 +128,15 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         .setMatchParent(false)
                         .setMarginLeftAndRight(24, 24)
                         .setOutsideColor(MainActivity.this.getResources().getColor(R.color.outside_color_trans))
-                        .setOnEasyDialogDismissed(new EasyDialog.OnEasyDialogDismissed()
-                        {
+                        .setOnEasyDialogDismissed(new EasyDialog.OnEasyDialogDismissed() {
                             @Override
-                            public void onDismissed()
-                            {
+                            public void onDismissed() {
                                 Toast.makeText(MainActivity.this, "dismiss", Toast.LENGTH_SHORT).show();
                             }
                         })
-                        .setOnEasyDialogShow(new EasyDialog.OnEasyDialogShow()
-                        {
+                        .setOnEasyDialogShow(new EasyDialog.OnEasyDialogShow() {
                             @Override
-                            public void onShow()
-                            {
+                            public void onShow() {
                                 Toast.makeText(MainActivity.this, "show", Toast.LENGTH_SHORT).show();
                             }
                         })
@@ -238,20 +230,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
     }
 
-    private int getStatusBarHeight()
-    {
+    private int getStatusBarHeight() {
         int result = 0;
         int resourceId = this.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0)
-        {
+        if (resourceId > 0) {
             result = this.getResources().getDimensionPixelSize(resourceId);
         }
         return result;
-    }
-
-    private int getActionBarHeight()
-    {
-        return this.getSupportActionBar().getHeight();
     }
 }
 
