@@ -235,12 +235,11 @@ public class EasyDialog {
     /**
      * 显示提示框
      */
-    public EasyDialog show() {
+    public void show() {
         if (dialog != null) {
             dialog.show();
             onDialogShowing();
         }
-        return this;
     }
 
     /**

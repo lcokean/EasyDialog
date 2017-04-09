@@ -20,9 +20,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1971cd93-f206-4c03-b34a-79ac6d25ccc1" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/michael/easydialogdemo/MainActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/michael/easydialogdemo/MainActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/easydialog/src/main/java/com/michael/easydialog/EasyDialog.java" afterPath="$PROJECT_DIR$/easydialog/src/main/java/com/michael/easydialog/EasyDialog.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/easydialog/src/main/res/layout/layout_dialog.xml" afterPath="$PROJECT_DIR$/easydialog/src/main/res/layout/layout_dialog.xml" />
     </list>
     <ignored path="EasyDialogDemo.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -110,15 +108,16 @@
       <file leaf-file-name="EasyDialog.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/easydialog/src/main/java/com/michael/easydialog/EasyDialog.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="355" column="84" selection-start-line="355" selection-start-column="84" selection-end-line="355" selection-end-column="84" />
+            <state relative-caret-position="-1785">
+              <caret line="242" column="5" selection-start-line="242" selection-start-column="5" selection-end-line="242" selection-end-column="5" />
               <folding>
                 <element signature="e#2042#2043#0" expanded="true" />
                 <element signature="e#2074#2075#0" expanded="true" />
                 <element signature="e#2130#2131#0" expanded="true" />
                 <element signature="e#2172#2173#0" expanded="true" />
-                <element signature="e#3260#3491#0" expanded="true" />
-                <element signature="e#3490#3491#0" expanded="true" />
+                <element signature="method#initDialog#0;class#EasyDialog#0" expanded="false" />
+                <element signature="method#setContentView#0;class#EasyDialog#0" expanded="false" />
+                <element signature="method#setLocation#0;class#EasyDialog#0" expanded="false" />
                 <element signature="e#4567#4793#0" expanded="true" />
                 <element signature="e#4792#4793#0" expanded="true" />
                 <element signature="e#6238#6239#0" expanded="true" />
@@ -129,9 +128,9 @@
                 <element signature="method#getScreenHeight#0;class#EasyDialog#0" expanded="false" />
                 <element signature="method#getStatusBarHeight#0;class#EasyDialog#0" expanded="false" />
                 <element signature="method#isFullScreen#0;class#EasyDialog#0" expanded="false" />
-                <element signature="e#20217#20304#0" expanded="true" />
-                <element signature="e#20550#20551#0" expanded="true" />
-                <element signature="e#20590#20591#0" expanded="true" />
+                <element signature="e#20190#20277#0" expanded="true" />
+                <element signature="e#20523#20524#0" expanded="true" />
+                <element signature="e#20563#20564#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -3226,7 +3225,14 @@
       <option name="project" value="LOCAL" />
       <updated>1491731357616</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="reconsitution easydialog">
+      <created>1491751481553</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1491751481553</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -3313,7 +3319,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="config to api 23" />
-    <option name="LAST_COMMIT_MESSAGE" value="config to api 23" />
+    <MESSAGE value="reconsitution easydialog" />
+    <option name="LAST_COMMIT_MESSAGE" value="reconsitution easydialog" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -3699,15 +3706,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/easydialog/src/main/java/com/michael/easydialog/EasyDialog.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="355" column="84" selection-start-line="355" selection-start-column="84" selection-end-line="355" selection-end-column="84" />
+        <state relative-caret-position="-1785">
+          <caret line="242" column="5" selection-start-line="242" selection-start-column="5" selection-end-line="242" selection-end-column="5" />
           <folding>
             <element signature="e#2042#2043#0" expanded="true" />
             <element signature="e#2074#2075#0" expanded="true" />
             <element signature="e#2130#2131#0" expanded="true" />
             <element signature="e#2172#2173#0" expanded="true" />
-            <element signature="e#3260#3491#0" expanded="true" />
-            <element signature="e#3490#3491#0" expanded="true" />
+            <element signature="method#initDialog#0;class#EasyDialog#0" expanded="false" />
+            <element signature="method#setContentView#0;class#EasyDialog#0" expanded="false" />
+            <element signature="method#setLocation#0;class#EasyDialog#0" expanded="false" />
             <element signature="e#4567#4793#0" expanded="true" />
             <element signature="e#4792#4793#0" expanded="true" />
             <element signature="e#6238#6239#0" expanded="true" />
@@ -3718,9 +3726,9 @@
             <element signature="method#getScreenHeight#0;class#EasyDialog#0" expanded="false" />
             <element signature="method#getStatusBarHeight#0;class#EasyDialog#0" expanded="false" />
             <element signature="method#isFullScreen#0;class#EasyDialog#0" expanded="false" />
-            <element signature="e#20217#20304#0" expanded="true" />
-            <element signature="e#20550#20551#0" expanded="true" />
-            <element signature="e#20590#20591#0" expanded="true" />
+            <element signature="e#20190#20277#0" expanded="true" />
+            <element signature="e#20523#20524#0" expanded="true" />
+            <element signature="e#20563#20564#0" expanded="true" />
           </folding>
         </state>
       </provider>
