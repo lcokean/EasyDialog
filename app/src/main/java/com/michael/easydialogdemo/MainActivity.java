@@ -1,7 +1,6 @@
 package com.michael.easydialogdemo;
 
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,8 +32,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         iniComponent();
-
-        AlertDialog.Builder
     }
 
     private void iniComponent() {
