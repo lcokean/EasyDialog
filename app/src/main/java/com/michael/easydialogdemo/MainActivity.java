@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //                View easyView = MainActivity.this.getLayoutInflater().inflate(R.layout.layout_tip_list_view, null);
 
-                new EasyDialog(MainActivity.this)
+                new EasyDialog.Builder(MainActivity.this)
 //                        .setLayout(easyView)
                         .setLayoutResourceId(R.layout.layout_tip_content_horizontal)
                         .setBackgroundColor(MainActivity.this.getResources().getColor(R.color.background_color_black))
@@ -72,18 +72,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setGravity(EasyDialog.GRAVITY_TOP)
                         .setTouchOutsideDismiss(true)
                         .setMatchParent(false)
-                        .setMarginLeftAndRight(24, 24)
+                        .setMargin(24, 24, 24, 24)
                         .setOutsideColor(MainActivity.this.getResources().getColor(R.color.outside_color_gray))
+                        .create()
                         .show();
-
-//                ListView listView = (ListView) easyView.findViewById(R.id.lvList);
-//                List<String> items = new ArrayList<String>();
-//                for(int i = 0; i < 20; i++)
-//                {
-//                    items.add(""+i);
-//                }
-//                ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, items);
-//                listView.setAdapter(itemsAdapter);
 
                 return false;
             }
@@ -95,35 +87,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.btnTopLeft:
                 View view = this.getLayoutInflater().inflate(R.layout.layout_tip_content_horizontal, null);
-                new EasyDialog(MainActivity.this)
+                new EasyDialog.Builder(MainActivity.this)
 //                        .setLayoutResourceId(R.layout.layout_tip_content_horizontal)//layout resource id
                         .setLayout(view)
                         .setBackgroundColor(MainActivity.this.getResources().getColor(R.color.background_color_black))
 //                        .setLocation(new location[])//point in screen
                         .setLocationByAttachedView(btnTopLeft)
                         .setGravity(EasyDialog.GRAVITY_BOTTOM)
-                        .setAnimationTranslationShow(EasyDialog.DIRECTION_X, 1000, -600, 100, -50, 50, 0)
-                        .setAnimationAlphaShow(1000, 0.3f, 1.0f)
-                        .setAnimationTranslationDismiss(EasyDialog.DIRECTION_X, 500, -50, 800)
-                        .setAnimationAlphaDismiss(500, 1.0f, 0.0f)
                         .setTouchOutsideDismiss(true)
                         .setMatchParent(true)
-                        .setMarginLeftAndRight(24, 24)
+                        .setMargin(24, 24, 24, 24)
                         .setOutsideColor(MainActivity.this.getResources().getColor(R.color.outside_color_trans))
+                        .create()
+                        .addAnimationTranslationShow(EasyDialog.DIRECTION_X, 1000, -600, 100, -50, 50, 0)
+                        .addAnimationAlphaShow(1000, 0.3f, 1.0f)
+                        .addAnimationTranslationDismiss(EasyDialog.DIRECTION_X, 500, -50, 800)
+                        .addAnimationAlphaDismiss(500, 1.0f, 0.0f)
                         .show();
                 break;
 
             case R.id.btnTopRight:
-                new EasyDialog(MainActivity.this)
+                new EasyDialog.Builder(MainActivity.this)
                         .setLayoutResourceId(R.layout.layout_tip_image_text)
                         .setGravity(EasyDialog.GRAVITY_BOTTOM)
                         .setBackgroundColor(MainActivity.this.getResources().getColor(R.color.background_color_black))
                         .setLocationByAttachedView(btnTopRight)
-                        .setAnimationTranslationShow(EasyDialog.DIRECTION_X, 350, 400, 0)
-                        .setAnimationTranslationDismiss(EasyDialog.DIRECTION_X, 350, 0, 400)
                         .setTouchOutsideDismiss(true)
                         .setMatchParent(false)
-                        .setMarginLeftAndRight(24, 24)
+                        .setMargin(24, 24, 24, 24)
                         .setOutsideColor(MainActivity.this.getResources().getColor(R.color.outside_color_trans))
                         .setOnEasyDialogDismissed(new EasyDialog.OnEasyDialogDismissed() {
                             @Override
@@ -137,91 +128,100 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 Toast.makeText(MainActivity.this, "show", Toast.LENGTH_SHORT).show();
                             }
                         })
+                        .create()
+                        .addAnimationTranslationShow(EasyDialog.DIRECTION_X, 350, 400, 0)
+                        .addAnimationTranslationDismiss(EasyDialog.DIRECTION_X, 350, 0, 400)
                         .show();
                 break;
             case R.id.btnMiddleTop:
-                new EasyDialog(MainActivity.this)
+                new EasyDialog.Builder(MainActivity.this)
                         .setLayoutResourceId(R.layout.layout_tip_content_horizontal)
                         .setBackgroundColor(MainActivity.this.getResources().getColor(R.color.background_color_blue))
                         .setLocationByAttachedView(btnMiddleTop)
-                        .setAnimationTranslationShow(EasyDialog.DIRECTION_Y, 1000, -800, 100, -50, 50, 0)
-                        .setAnimationTranslationDismiss(EasyDialog.DIRECTION_Y, 500, 0, -800)
                         .setGravity(EasyDialog.GRAVITY_TOP)
                         .setTouchOutsideDismiss(true)
                         .setMatchParent(false)
-                        .setMarginLeftAndRight(24, 24)
+                        .setMargin(24, 24, 24, 24)
                         .setOutsideColor(MainActivity.this.getResources().getColor(R.color.outside_color_pink))
+                        .create()
+                        .addAnimationTranslationShow(EasyDialog.DIRECTION_Y, 1000, -800, 100, -50, 50, 0)
+                        .addAnimationTranslationDismiss(EasyDialog.DIRECTION_Y, 500, 0, -800)
                         .show();
                 break;
             case R.id.btnMiddleLeft:
-                new EasyDialog(MainActivity.this)
+                new EasyDialog.Builder(MainActivity.this)
                         .setLayoutResourceId(R.layout.layout_tip_text)
                         .setBackgroundColor(MainActivity.this.getResources().getColor(R.color.background_color_purple))
                         .setLocationByAttachedView(btnMiddleLeft)
                         .setGravity(EasyDialog.GRAVITY_RIGHT)
-                        .setAnimationAlphaShow(300, 0.0f, 1.0f)
-                        .setAnimationAlphaDismiss(300, 1.0f, 0.0f)
                         .setTouchOutsideDismiss(true)
                         .setMatchParent(false)
                         .setOutsideColor(MainActivity.this.getResources().getColor(R.color.outside_color_gray))
+                        .create()
+                        .addAnimationAlphaShow(300, 0.0f, 1.0f)
+                        .addAnimationAlphaDismiss(300, 1.0f, 0.0f)
                         .show();
                 break;
             case R.id.btnMiddleRight:
-                new EasyDialog(MainActivity.this)
+                new EasyDialog.Builder(MainActivity.this)
                         .setLayoutResourceId(R.layout.layout_tip_text)
                         .setBackgroundColor(MainActivity.this.getResources().getColor(R.color.background_color_red))
                         .setLocationByAttachedView(btnMiddleRight)
                         .setGravity(EasyDialog.GRAVITY_LEFT)
-                        .setAnimationAlphaShow(300, 0.0f, 1.0f)
-                        .setAnimationAlphaDismiss(300, 1.0f, 0.0f)
                         .setTouchOutsideDismiss(true)
                         .setMatchParent(false)
                         .setOutsideColor(MainActivity.this.getResources().getColor(R.color.outside_color_gray))
+                        .create()
+                        .addAnimationAlphaShow(300, 0.0f, 1.0f)
+                        .addAnimationAlphaDismiss(300, 1.0f, 0.0f)
                         .show();
                 break;
             case R.id.btnMiddleBottom:
-                new EasyDialog(MainActivity.this)
+                new EasyDialog.Builder(MainActivity.this)
                         .setLayoutResourceId(R.layout.layout_tip_content_horizontal)
                         .setGravity(EasyDialog.GRAVITY_BOTTOM)
                         .setBackgroundColor(MainActivity.this.getResources().getColor(R.color.background_color_brown))
                         .setLocationByAttachedView(btnMiddleBottom)
-                        .setAnimationTranslationShow(EasyDialog.DIRECTION_Y, 1000, 800, -100, -50, 50, 0)
-                        .setAnimationTranslationDismiss(EasyDialog.DIRECTION_Y, 500, 0, 800)
-                        .setAnimationAlphaShow(1000, 0.3f, 1.0f)
                         .setTouchOutsideDismiss(true)
                         .setMatchParent(true)
-                        .setMarginLeftAndRight(24, 24)
+                        .setMargin(24, 24, 24, 24)
                         .setOutsideColor(MainActivity.this.getResources().getColor(R.color.outside_color_gray))
+                        .create()
+                        .addAnimationTranslationShow(EasyDialog.DIRECTION_Y, 1000, 800, -100, -50, 50, 0)
+                        .addAnimationTranslationDismiss(EasyDialog.DIRECTION_Y, 500, 0, 800)
+                        .addAnimationAlphaShow(1000, 0.3f, 1.0f)
                         .show();
                 break;
             case R.id.btnBottomLeft:
-                new EasyDialog(MainActivity.this)
+                new EasyDialog.Builder(MainActivity.this)
                         .setLayoutResourceId(R.layout.layout_tip_text)
                         .setBackgroundColor(MainActivity.this.getResources().getColor(R.color.background_color_pink))
                         .setLocationByAttachedView(btnBottomLeft)
                         .setGravity(EasyDialog.GRAVITY_TOP)
-                        .setAnimationAlphaShow(600, 0.0f, 1.0f)
-                        .setAnimationAlphaDismiss(600, 1.0f, 0.0f)
                         .setTouchOutsideDismiss(true)
                         .setMatchParent(false)
-                        .setMarginLeftAndRight(24, 24)
+                        .setMargin(24, 24, 24, 24)
                         .setOutsideColor(MainActivity.this.getResources().getColor(R.color.outside_color_trans))
+                        .create()
+                        .addAnimationAlphaShow(600, 0.0f, 1.0f)
+                        .addAnimationAlphaDismiss(600, 1.0f, 0.0f)
                         .show();
                 break;
             case R.id.btnBottomRight:
-                new EasyDialog(MainActivity.this)
+                new EasyDialog.Builder(MainActivity.this)
                         .setLayoutResourceId(R.layout.layout_tip_image_text)
                         .setBackgroundColor(MainActivity.this.getResources().getColor(R.color.background_color_yellow))
                         .setLocationByAttachedView(btnBottomRight)
                         .setGravity(EasyDialog.GRAVITY_TOP)
-                        .setAnimationTranslationShow(EasyDialog.DIRECTION_X, 300, 400, 0)
-                        .setAnimationTranslationShow(EasyDialog.DIRECTION_Y, 300, 400, 0)
-                        .setAnimationTranslationDismiss(EasyDialog.DIRECTION_X, 300, 0, 400)
-                        .setAnimationTranslationDismiss(EasyDialog.DIRECTION_Y, 300, 0, 400)
                         .setTouchOutsideDismiss(true)
                         .setMatchParent(false)
-                        .setMarginLeftAndRight(24, 24)
+                        .setMargin(24, 24, 24, 24)
                         .setOutsideColor(MainActivity.this.getResources().getColor(R.color.outside_color_trans))
+                        .create()
+                        .addAnimationTranslationShow(EasyDialog.DIRECTION_X, 300, 400, 0)
+                        .addAnimationTranslationShow(EasyDialog.DIRECTION_Y, 300, 400, 0)
+                        .addAnimationTranslationDismiss(EasyDialog.DIRECTION_X, 300, 0, 400)
+                        .addAnimationTranslationDismiss(EasyDialog.DIRECTION_Y, 300, 0, 400)
                         .show();
                 break;
         }

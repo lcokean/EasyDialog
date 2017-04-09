@@ -13,6 +13,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Build;
+import android.support.annotation.IntDef;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -26,14 +27,19 @@ import android.widget.Toast;
 
 import com.nineoldandroids.view.ViewHelper;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.R.attr.duration;
+import static android.R.attr.gravity;
 
 /**
  * Created by michael on 15/4/15.
  */
 public class EasyDialog {
-    private Context context;
+
     /**
      * 内容在三角形上面
      */
@@ -50,22 +56,17 @@ public class EasyDialog {
      * 内容在三角形右面
      */
     public static final int GRAVITY_RIGHT = 3;
+
+    @IntDef(value = {GRAVITY_TOP, GRAVITY_BOTTOM, GRAVITY_LEFT, GRAVITY_RIGHT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Gravity {
+    }
+
+    private Context context;
     /**
      * 对话框本身
      */
     private Dialog dialog;
-    /**
-     * 坐标
-     */
-    private int[] location;
-    /**
-     * 提醒框位置
-     */
-    private int gravity;
-    /**
-     * 外面传递进来的View
-     */
-    private View contentView;
     /**
      * 三角形
      */
@@ -75,172 +76,63 @@ public class EasyDialog {
      */
     private LinearLayout llContent;
     /**
-     * 触摸外面，是否关闭对话框
-     */
-    private boolean touchOutsideDismiss;
-    /**
      * 提示框所在的容器
      */
     private RelativeLayout rlOutsideBackground;
 
-    private int defaultLeftMargin;
-    private int defaultRightMargin;
-
-    public EasyDialog(Context context) {
-        initDialog(context);
+    protected EasyDialog(Context context) {
+        this(context, 0);
     }
 
-    private void initDialog(final Context context) {
+    protected EasyDialog(Context context, int theme) {
+        initDialog(context, theme);
+    }
+
+    private void initDialog(final Context context, int theme) {
         this.context = context;
         LayoutInflater layoutInflater = ((Activity) context).getLayoutInflater();
         View dialogView = layoutInflater.inflate(R.layout.layout_dialog, null);
-        ViewTreeObserver viewTreeObserver = dialogView.getViewTreeObserver();
-        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                //当View可以获取宽高的时候，设置view的位置
-                relocation(location);
 
-            }
-        });
         rlOutsideBackground = (RelativeLayout) dialogView.findViewById(R.id.rlOutsideBackground);
-        setTouchOutsideDismiss(true);
+
         ivTriangle = (ImageView) dialogView.findViewById(R.id.ivTriangle);
         llContent = (LinearLayout) dialogView.findViewById(R.id.llContent);
-        dialog = new Dialog(context, isFullScreen() ? R.style.Dialog_Fullscreen : R.style.Dialog_Base);
+        llContent.setBackgroundResource(R.drawable.round_corner_bg);
+        if (theme == 0) {
+            theme = isFullScreen() ? R.style.Dialog_Fullscreen : R.style.Dialog_Base;
+        }
+        dialog = new Dialog(context, theme);
         dialog.setContentView(dialogView);
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (onEasyDialogDismissed != null) {
-                    onEasyDialogDismissed.onDismissed();
-                }
-            }
-        });
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                if (onEasyDialogShow != null) {
-                    onEasyDialogShow.onShow();
-                }
-            }
-        });
+
         animatorSetForDialogShow = new AnimatorSet();
         animatorSetForDialogDismiss = new AnimatorSet();
         objectAnimatorsForDialogShow = new ArrayList<>();
         objectAnimatorsForDialogDismiss = new ArrayList<>();
-        defaultLeftMargin = context.getResources().getDimensionPixelOffset(R.dimen.easy_dialog_default_left_margin);
-        defaultRightMargin = context.getResources().getDimensionPixelOffset(R.dimen.easy_dialog_default_right_margin);
-        ini();
     }
 
     final View.OnTouchListener outsideBackgroundListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (touchOutsideDismiss && dialog != null) {
+            if (dialog != null) {
                 onDialogDismiss();
             }
             return false;
         }
     };
 
-    /**
-     * The Dialog instance
-     */
-    public Dialog getDialog() {
-        return dialog;
-    }
-
-    /**
-     * 初始化默认值
-     */
-    private void ini() {
-        this.setLocation(new int[]{0, 0})
-                .setGravity(GRAVITY_BOTTOM)
-                .setTouchOutsideDismiss(true)
-                .setOutsideColor(Color.TRANSPARENT)
-                .setBackgroundColor(Color.BLUE)
-                .setMatchParent(true)
-                .setMarginLeftAndRight(defaultLeftMargin, defaultRightMargin);
-    }
-
-    /**
-     * 设置提示框中要显示的内容
-     */
-    public EasyDialog setLayout(View layout) {
-        if (layout != null) {
-            this.contentView = layout;
+    public void setContentView(View contentView) {
+        if (contentView == null) {
+            return;
         }
-        return this;
-    }
-
-    /**
-     * 设置提示框中要显示的内容的布局Id
-     */
-    public EasyDialog setLayoutResourceId(int layoutResourceId) {
-        View view = ((Activity) context).getLayoutInflater().inflate(layoutResourceId, null);
-        setLayout(view);
-        return this;
-    }
-
-    /**
-     * 设置三角形所在的位置
-     */
-    public EasyDialog setLocation(int[] location) {
-        this.location = location;
-        return this;
-    }
-
-    /**
-     * 设置三角形所在的位置
-     * location.x坐标值为attachedView所在屏幕位置的中心
-     * location.y坐标值依据当前的gravity，如果gravity是top，则为控件上方的y值，如果是bottom，则为控件的下方的y值
-     *
-     * @param attachedView 在哪个View显示提示信息
-     */
-    public EasyDialog setLocationByAttachedView(View attachedView) {
-        if (attachedView != null) {
-            this.attachedView = attachedView;
-            int[] attachedViewLocation = new int[2];
-            attachedView.getLocationOnScreen(attachedViewLocation);
-            switch (gravity) {
-                case GRAVITY_BOTTOM:
-                    attachedViewLocation[0] += attachedView.getWidth() / 2;
-                    attachedViewLocation[1] += attachedView.getHeight();
-                    break;
-                case GRAVITY_TOP:
-                    attachedViewLocation[0] += attachedView.getWidth() / 2;
-                    break;
-                case GRAVITY_LEFT:
-                    attachedViewLocation[1] += attachedView.getHeight() / 2;
-                    break;
-                case GRAVITY_RIGHT:
-                    attachedViewLocation[0] += attachedView.getWidth();
-                    attachedViewLocation[1] += attachedView.getHeight() / 2;
-            }
-            setLocation(attachedViewLocation);
+        if (llContent.getChildCount() > 0) {
+            llContent.removeAllViews();
         }
-        return this;
+        llContent.addView(contentView);
     }
 
-    /**
-     * 对话框所依附的View
-     */
-    private View attachedView = null;
-
-    public View getAttachedView() {
-        return this.attachedView;
-    }
-
-    /**
-     * 设置显示的内容在上方还是下方，如果设置错误，默认是在下方
-     */
-    public EasyDialog setGravity(int gravity) {
-        if (gravity != GRAVITY_BOTTOM && gravity != GRAVITY_TOP && gravity != GRAVITY_LEFT && gravity != GRAVITY_RIGHT) {
-            gravity = GRAVITY_BOTTOM;
-        }
-        this.gravity = gravity;
-        switch (this.gravity) {
+    protected void setLocation(final int[] location, @Gravity final int gravity) {
+        // 三角型方向
+        switch (gravity) {
             case GRAVITY_BOTTOM:
                 ivTriangle.setBackgroundResource(R.drawable.triangle_bottom);
                 break;
@@ -254,64 +146,71 @@ public class EasyDialog {
                 ivTriangle.setBackgroundResource(R.drawable.triangle_right);
                 break;
         }
-        llContent.setBackgroundResource(R.drawable.round_corner_bg);
-        if (attachedView != null)//如果用户调用setGravity()之前就调用过setLocationByAttachedView，需要再调用一次setLocationByAttachedView
-        {
-            this.setLocationByAttachedView(attachedView);
-        }
-        this.setBackgroundColor(backgroundColor);
-        return this;
+        // 内容位置
+        ViewTreeObserver viewTreeObserver = rlOutsideBackground.getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                //当View可以获取宽高的时候，设置view的位置
+                relocation(location, gravity);
+            }
+        });
+        // 缩放动画
+        float statusBarHeight = isFullScreen() ? 0.0f : getStatusBarHeight();
+        View view = getTipViewInstance();
+        view.setPivotX(location[0]);
+        view.setPivotY(location[1] - statusBarHeight);
+    }
+
+    /**
+     * The Dialog instance
+     */
+    public Dialog getDialog() {
+        return dialog;
     }
 
     /**
      * 设置是否填充屏幕，如果不填充就适应布局内容的宽度，显示内容的位置会尽量随着三角形的位置居中
      */
-    public EasyDialog setMatchParent(boolean matchParent) {
+    public void setMatchParent(boolean matchParent) {
         ViewGroup.LayoutParams layoutParams = llContent.getLayoutParams();
         layoutParams.width = matchParent ? ViewGroup.LayoutParams.MATCH_PARENT : ViewGroup.LayoutParams.WRAP_CONTENT;
         llContent.setLayoutParams(layoutParams);
-        return this;
     }
 
     /**
-     * 距离屏幕左右的边距
+     * 距离屏幕的边距
      */
-    public EasyDialog setMarginLeftAndRight(int left, int right) {
+    public void setMargin(int left, int top, int right, int bottom) {
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) llContent.getLayoutParams();
-        layoutParams.setMargins(left, 0, right, 0);
+        layoutParams.setMargins(left, top, right, bottom);
         llContent.setLayoutParams(layoutParams);
-        return this;
-    }
-
-    public EasyDialog setMarginTopAndBottom(int top, int bottom) {
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) llContent.getLayoutParams();
-        layoutParams.setMargins(0, top, 0, bottom);
-        llContent.setLayoutParams(layoutParams);
-        return this;
     }
 
     /**
      * 设置触摸对话框外面，对话框是否消失
      */
-    public EasyDialog setTouchOutsideDismiss(boolean touchOutsideDismiss) {
-        this.touchOutsideDismiss = touchOutsideDismiss;
+    public void setTouchOutsideDismiss(boolean touchOutsideDismiss) {
         if (touchOutsideDismiss) {
             rlOutsideBackground.setOnTouchListener(outsideBackgroundListener);
         } else {
             rlOutsideBackground.setOnTouchListener(null);
         }
-        return this;
+    }
+
+    /**
+     * 设置是否可以按返回按钮取消
+     */
+    public void setCancelable(boolean cancelable) {
+        dialog.setCancelable(cancelable);
     }
 
     /**
      * 设置提醒框外部区域的颜色
      */
-    public EasyDialog setOutsideColor(int color) {
+    public void setOutsideColor(int color) {
         rlOutsideBackground.setBackgroundColor(color);
-        return this;
     }
-
-    private int backgroundColor;
 
     /**
      * 设置对话框的颜色
@@ -319,8 +218,7 @@ public class EasyDialog {
      * http://stackoverflow.com/questions/24492000/set-color-of-triangle-on-run-time
      * http://stackoverflow.com/questions/16636412/change-shape-solid-color-at-runtime-inside-drawable-xml-used-as-background
      */
-    public EasyDialog setBackgroundColor(int color) {
-        backgroundColor = color;
+    public void setBackgroundColor(int color) {
         LayerDrawable drawableTriangle = (LayerDrawable) ivTriangle.getBackground();
         GradientDrawable shapeTriangle = (GradientDrawable) (((RotateDrawable) drawableTriangle.findDrawableByLayerId(R.id.shape_id)).getDrawable());
         if (shapeTriangle != null) {
@@ -332,7 +230,6 @@ public class EasyDialog {
         if (drawableRound != null) {
             drawableRound.setColor(color);
         }
-        return this;
     }
 
     /**
@@ -340,13 +237,6 @@ public class EasyDialog {
      */
     public EasyDialog show() {
         if (dialog != null) {
-            if (contentView == null) {
-                throw new RuntimeException("您是否未调用setLayout()或者setLayoutResourceId()方法来设置要显示的内容呢？");
-            }
-            if (llContent.getChildCount() > 0) {
-                llContent.removeAllViews();
-            }
-            llContent.addView(contentView);
             dialog.show();
             onDialogShowing();
         }
@@ -364,12 +254,13 @@ public class EasyDialog {
      * 横向
      */
     public static final int DIRECTION_X = 0;
+
+
     /**
      * 纵向
      */
     public static final int DIRECTION_Y = 1;
 
-
     /**
      * 水平动画
      *
@@ -377,8 +268,8 @@ public class EasyDialog {
      * @param duration  动画执行的时间长度
      * @param values    动画移动的位置
      */
-    public EasyDialog setAnimationTranslationShow(int direction, int duration, float... values) {
-        return setAnimationTranslation(true, direction, duration, values);
+    public EasyDialog addAnimationTranslationShow(int direction, int duration, float... values) {
+        return addAnimationTranslation(true, direction, duration, values);
     }
 
     /**
@@ -388,11 +279,11 @@ public class EasyDialog {
      * @param duration  动画执行的时间长度
      * @param values    动画移动的位置
      */
-    public EasyDialog setAnimationTranslationDismiss(int direction, int duration, float... values) {
-        return setAnimationTranslation(false, direction, duration, values);
+    public EasyDialog addAnimationTranslationDismiss(int direction, int duration, float... values) {
+        return addAnimationTranslation(false, direction, duration, values);
     }
 
-    private EasyDialog setAnimationTranslation(boolean isShow, int direction, int duration, float... values) {
+    private EasyDialog addAnimationTranslation(boolean isShow, int direction, int duration, float... values) {
         if (direction != DIRECTION_X && direction != DIRECTION_Y) {
             direction = DIRECTION_X;
         }
@@ -421,8 +312,8 @@ public class EasyDialog {
      * @param duration 动画执行的时间长度
      * @param values   动画移动的位置
      */
-    public EasyDialog setAnimationAlphaShow(int duration, float... values) {
-        return setAnimationAlpha(true, duration, values);
+    public EasyDialog addAnimationAlphaShow(int duration, float... values) {
+        return addAnimationAlpha(true, duration, values);
     }
 
     /**
@@ -431,12 +322,12 @@ public class EasyDialog {
      * @param duration 动画执行的时间长度
      * @param values   动画移动的位置
      */
-    public EasyDialog setAnimationAlphaDismiss(int duration, float... values) {
-        return setAnimationAlpha(false, duration, values);
+    public EasyDialog addAnimationAlphaDismiss(int duration, float... values) {
+        return addAnimationAlpha(false, duration, values);
     }
 
-    private EasyDialog setAnimationAlpha(boolean isShow, int duration, float... values) {
-        ObjectAnimator animator = ObjectAnimator.ofFloat(rlOutsideBackground.findViewById(R.id.rlParentForAnimate), "alpha", values).setDuration(duration);
+    private EasyDialog addAnimationAlpha(boolean isShow, int duration, float... values) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(getTipViewInstance(), "alpha", values).setDuration(duration);
         if (isShow) {
             objectAnimatorsForDialogShow.add(animator);
         } else {
@@ -450,21 +341,21 @@ public class EasyDialog {
     private List<Animator> objectAnimatorsForDialogShow;
     private List<Animator> objectAnimatorsForDialogDismiss;
 
-
     private void onDialogShowing() {
         if (animatorSetForDialogShow != null && objectAnimatorsForDialogShow != null && objectAnimatorsForDialogShow.size() > 0) {
             animatorSetForDialogShow.playTogether(objectAnimatorsForDialogShow);
             animatorSetForDialogShow.start();
         }
         //TODO 缩放的动画效果不好，不能从控件所在的位置开始缩放
-        float statusBarHeight = isFullScreen() ? 0.0f : getStatusBarHeight();
+        /*float statusBarHeight = isFullScreen() ? 0.0f : getStatusBarHeight();
         View view = getTipViewInstance();
         view.setPivotX(location[0]);
-        view.setPivotY(location[1] - statusBarHeight);
+        view.setPivotY(location[1] - statusBarHeight);*/
 
-
+        View view = getTipViewInstance();
         ObjectAnimator.ofFloat(view, "scaleX", 0.0f, 1.0f).setDuration(300).start();
         ObjectAnimator.ofFloat(view, "scaleY", 0.0f, 1.0f).setDuration(300).start();
+        ObjectAnimator.ofFloat(rlOutsideBackground, "alpha", 0.0f, 1.0f).setDuration(300).start();
     }
 
     @SuppressLint("NewApi")
@@ -531,7 +422,7 @@ public class EasyDialog {
      * 根据x，y，重新设置控件的位置
      * 因为setX setY为0的时候，都是在状态栏以下的，所以app不是全屏的话，需要扣掉状态栏的高度
      */
-    private void relocation(int[] location) {
+    private void relocation(int[] location, @Gravity int gravity) {
         float statusBarHeight = isFullScreen() ? 0.0f : getStatusBarHeight();
         ViewHelper.setX(ivTriangle, location[0] - ivTriangle.getWidth() / 2);
         //  ivTriangle.setX(location[0] - ivTriangle.getWidth() / 2);
@@ -641,32 +532,10 @@ public class EasyDialog {
     }
 
     /**
-     * 设置是否可以按返回按钮取消
-     */
-    public EasyDialog setCancelable(boolean cancelable) {
-        dialog.setCancelable(cancelable);
-        return this;
-    }
-
-    private OnEasyDialogDismissed onEasyDialogDismissed;
-
-    public EasyDialog setOnEasyDialogDismissed(OnEasyDialogDismissed onEasyDialogDismissed) {
-        this.onEasyDialogDismissed = onEasyDialogDismissed;
-        return this;
-    }
-
-    /**
      * Dialog is dismissed
      */
     public interface OnEasyDialogDismissed {
         public void onDismissed();
-    }
-
-    private OnEasyDialogShow onEasyDialogShow;
-
-    public EasyDialog setOnEasyDialogShow(OnEasyDialogShow onEasyDialogShow) {
-        this.onEasyDialogShow = onEasyDialogShow;
-        return this;
     }
 
     /**
@@ -674,5 +543,235 @@ public class EasyDialog {
      */
     public interface OnEasyDialogShow {
         public void onShow();
+    }
+
+    private static class DialogParams {
+
+        public final Context mContext;
+        public final LayoutInflater mInflater;
+        public boolean mCancelable;
+        /**
+         * 触摸外面，是否关闭对话框
+         */
+        public boolean mTouchOutsideDismiss;
+
+        /**
+         * 坐标
+         */
+        private int[] location;
+        /**
+         * 提醒框位置
+         */
+        private int gravity;
+        /**
+         * 外面传递进来的View
+         */
+        private View contentView;
+        /**
+         * 对话框所依附的View
+         */
+        private View attachedView = null;
+        /**
+         * 是否填充屏幕
+         */
+        public boolean mMatchParent;
+
+        public int mMarginLeft, mMarginTop, mMarginRight, mMarginBottom;
+
+        public int mBackgroundColor;
+        public int mOutsideColor;
+
+        public OnEasyDialogShow mOnEasyDialogShow;
+        private OnEasyDialogDismissed mOnEasyDialogDismissed;
+
+        public DialogParams(Context context) {
+            mContext = context;
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            // 默认值
+            mCancelable = true;
+            mTouchOutsideDismiss = true;
+            mMatchParent = true;
+            location = new int[]{0, 0};
+            gravity = GRAVITY_BOTTOM;
+            mOutsideColor = Color.TRANSPARENT;
+            mBackgroundColor = Color.BLUE;
+
+            int defaultMargin = context.getResources().getDimensionPixelOffset(R.dimen.easy_dialog_default_left_margin);
+            mMarginLeft = defaultMargin;
+            mMarginRight = defaultMargin;
+
+        }
+    }
+
+    public static class Builder {
+
+        private final DialogParams P;
+
+        private int mTheme;
+
+        public Builder(Context context) {
+            this(context, 0);
+        }
+
+        public Builder(Context context, int theme) {
+            P = new DialogParams(context);
+            mTheme = theme;
+        }
+
+        public Builder setCancelable(boolean cancelable) {
+            P.mCancelable = cancelable;
+            return this;
+        }
+
+        public Builder setTouchOutsideDismiss(boolean touchOutsideDismiss) {
+            P.mTouchOutsideDismiss = touchOutsideDismiss;
+            return this;
+        }
+
+        /**
+         * 设置提示框中要显示的内容
+         */
+        public Builder setLayout(View layout) {
+            if (layout != null) {
+                P.contentView = layout;
+            }
+            return this;
+        }
+
+        /**
+         * 设置提示框中要显示的内容的布局Id
+         */
+        public Builder setLayoutResourceId(int layoutResourceId) {
+            View view = P.mInflater.inflate(layoutResourceId, null);
+            setLayout(view);
+            return this;
+        }
+
+        /**
+         * 设置三角形所在的位置
+         */
+        public Builder setLocation(int[] location) {
+            P.location = location;
+            return this;
+        }
+
+        /**
+         * 设置三角形所在的位置
+         * location.x坐标值为attachedView所在屏幕位置的中心
+         * location.y坐标值依据当前的gravity，如果gravity是top，则为控件上方的y值，如果是bottom，则为控件的下方的y值
+         *
+         * @param attachedView 在哪个View显示提示信息
+         */
+        public Builder setLocationByAttachedView(View attachedView) {
+            if (attachedView != null) {
+                P.attachedView = attachedView;
+                int[] attachedViewLocation = new int[2];
+                attachedView.getLocationOnScreen(attachedViewLocation);
+                switch (P.gravity) {
+                    case GRAVITY_BOTTOM:
+                        attachedViewLocation[0] += attachedView.getWidth() / 2;
+                        attachedViewLocation[1] += attachedView.getHeight();
+                        break;
+                    case GRAVITY_TOP:
+                        attachedViewLocation[0] += attachedView.getWidth() / 2;
+                        break;
+                    case GRAVITY_LEFT:
+                        attachedViewLocation[1] += attachedView.getHeight() / 2;
+                        break;
+                    case GRAVITY_RIGHT:
+                        attachedViewLocation[0] += attachedView.getWidth();
+                        attachedViewLocation[1] += attachedView.getHeight() / 2;
+                }
+                setLocation(attachedViewLocation);
+            }
+            return this;
+        }
+
+        /**
+         * 设置显示的内容在上方还是下方，如果设置错误，默认是在下方
+         */
+        public Builder setGravity(@Gravity int gravity) {
+            P.gravity = gravity;
+            //如果用户调用setGravity()之前就调用过setLocationByAttachedView，需要再调用一次setLocationByAttachedView
+            if (P.attachedView != null) {
+                this.setLocationByAttachedView(P.attachedView);
+            }
+            return this;
+        }
+
+        /**
+         * 设置是否填充屏幕，如果不填充就适应布局内容的宽度，显示内容的位置会尽量随着三角形的位置居中
+         */
+        public Builder setMatchParent(boolean matchParent) {
+            P.mMatchParent = matchParent;
+            return this;
+        }
+
+        /**
+         * 距离屏幕的边距
+         */
+        public Builder setMargin(int left, int top, int right, int bottom) {
+            P.mMarginLeft = left;
+            P.mMarginTop = top;
+            P.mMarginRight = right;
+            P.mMarginBottom = bottom;
+            return this;
+        }
+
+        public Builder setOutsideColor(int color) {
+            P.mOutsideColor = color;
+            return this;
+        }
+
+        public Builder setBackgroundColor(int color) {
+            P.mBackgroundColor = color;
+            return this;
+        }
+
+        public Builder setOnEasyDialogDismissed(OnEasyDialogDismissed onEasyDialogDismissed) {
+            P.mOnEasyDialogDismissed = onEasyDialogDismissed;
+            return this;
+        }
+
+        public Builder setOnEasyDialogShow(OnEasyDialogShow onEasyDialogShow) {
+            P.mOnEasyDialogShow = onEasyDialogShow;
+            return this;
+        }
+
+        public EasyDialog create() {
+            final EasyDialog dialog = new EasyDialog(P.mContext, mTheme);
+            if (P.contentView == null) {
+                throw new RuntimeException("您是否未调用setLayout()或者setLayoutResourceId()方法来设置要显示的内容呢？");
+            }
+            dialog.setContentView(P.contentView);
+            dialog.setCancelable(P.mCancelable);
+            dialog.setTouchOutsideDismiss(P.mTouchOutsideDismiss);
+            dialog.setMatchParent(P.mMatchParent);
+            dialog.setMargin(P.mMarginLeft, P.mMarginTop, P.mMarginRight, P.mMarginBottom);
+
+            dialog.setLocation(P.location, P.gravity);
+
+            dialog.setOutsideColor(P.mOutsideColor);
+            dialog.setBackgroundColor(P.mBackgroundColor);
+
+            dialog.getDialog().setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    if (P.mOnEasyDialogDismissed != null) {
+                        P.mOnEasyDialogDismissed.onDismissed();
+                    }
+                }
+            });
+            dialog.getDialog().setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    if (P.mOnEasyDialogShow != null) {
+                        P.mOnEasyDialogShow.onShow();
+                    }
+                }
+            });
+
+            return dialog;
+        }
     }
 }
